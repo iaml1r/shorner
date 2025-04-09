@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Editor with Shadow & Radius</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    .controls {
+      margin: 20px 0;
+    }
+    input[type="range"] {
+      width: 200px;
+    }
+    canvas {
+      margin-top: 20px;
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Upload Image & Style It</h2>
+  <input type="file" id="imageInput" accept="image/*"><br><br>
+
+  <div class="controls">
+    <div>
+      <label>Corner Radius:</label>
+      <input type="range" id="radius" min="0" max="100" value="30">
+    </div>
+    <div>
+      <label>Shadow Blur:</label>
+      <input type="range" id="blur" min="0" max="100" value="30">
+    </div>
+    <div>
+      <label>Shadow Offset X:</label>
+      <input type="range" id="offsetX" min="-100" max="100" value="0">
+    </div>
+    <div>
+      <label>Shadow Offset Y:</label>
+      <input type="range" id="offsetY" min="-100" max="100" value="20">
+    </div>
+    <div>
+      <label>Shadow Color:</label>
+      <input type="color" id="shadowColor" value="#000000">
+    </div>
+  </div>
+
+  <button id="downloadBtn">Download</button>
+  <br><br>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const radiusInput = document.getElementById('radius');
+    const blurInput = document.getElementById('blur');
+    const offsetXInput = document.getElementById('offsetX');
+    const offsetYInput = document.getElementById('offsetY');
+    const colorInput = document.getElementById('shadowColor');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    let img = new Image();
+
+    function drawRoundedImageWithShadow() {
+      const radius = parseInt(radiusInput.value);
+      const blur = parseInt(blurInput.value);
+      const offsetX = parseInt(offsetXInput.value);
+      const offsetY = parseInt(offsetYInput.value);
+      const shadowColor = colorInput.value;
+
+      const padding = blur + Math.max(Math.abs(offsetX), Math.abs(offsetY)) + 20;
+      const width = img.width;
+      const height = img.height;
+
+      canvas.width = width + padding * 2;
+      canvas.height = height + padding * 2;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const x = padding;
+      const y = padding;
+
+      // Draw shadow behind rounded rectangle
+      ctx.save();
+      ctx.fillStyle = 'white';
+      ctx.shadowColor = shadowColor;
+      ctx.shadowBlur = blur;
+      ctx.shadowOffsetX = offsetX;
+      ctx.shadowOffsetY = offsetY;
+
+      ctx.beginPath();
+      drawRoundedRect(ctx, x, y, width, height, radius);
+      ctx.fill();
+      ctx.restore();
+
+      // Draw image clipped to rounded rect
+      ctx.save();
+      ctx.beginPath();
+      drawRoundedRect(ctx, x, y, width, height, radius);
+      ctx.clip();
+      ctx.drawImage(img, x, y);
+      ctx.restore();
+    }
+
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    imageInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        img = new Image();
+        img.onload = drawRoundedImageWithShadow;
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    [radiusInput, blurInput, offsetXInput, offsetYInput, colorInput].forEach(input => {
+      input.addEventListener('input', drawRoundedImageWithShadow);
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'styled-image.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
