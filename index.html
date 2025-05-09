@@ -25,7 +25,7 @@
       display: block;
       width: 80px;
       height: 4px;
-      background: #f1c40f; /* Yellow accent */
+      background: #f1c40f;
       margin: 10px auto 0;
       border-radius: 4px;
     }
@@ -54,7 +54,7 @@
 
     input[type="range"] {
       width: 200px;
-      accent-color: #f1c40f; /* Yellow thumb/track */
+      accent-color: #f1c40f;
       background: #222;
       height: 6px;
       border-radius: 4px;
@@ -163,7 +163,7 @@
 
       // Draw shadow behind rounded rectangle
       ctx.save();
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'rgba(0,0,0,0)'; // Transparent fill
       ctx.shadowColor = shadowColor;
       ctx.shadowBlur = blur;
       ctx.shadowOffsetX = offsetX;
