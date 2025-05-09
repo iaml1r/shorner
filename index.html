@@ -142,46 +142,47 @@
 
     let img = new Image();
 
-    function drawRoundedImageWithShadow() {
-      const radius = parseInt(radiusInput.value);
-      const blur = parseInt(blurInput.value);
-      const offsetX = parseInt(offsetXInput.value);
-      const offsetY = parseInt(offsetYInput.value);
-      const shadowColor = colorInput.value;
+function drawRoundedImageWithShadow() {
+  const radius = parseInt(radiusInput.value);
+  const blur = parseInt(blurInput.value);
+  const offsetX = parseInt(offsetXInput.value);
+  const offsetY = parseInt(offsetYInput.value);
+  const shadowColor = colorInput.value;
 
-      const padding = blur + Math.max(Math.abs(offsetX), Math.abs(offsetY)) + 20;
-      const width = img.width;
-      const height = img.height;
+  const padding = blur + Math.max(Math.abs(offsetX), Math.abs(offsetY)) + 20;
+  const width = img.width;
+  const height = img.height;
 
-      canvas.width = width + padding * 2;
-      canvas.height = height + padding * 2;
+  canvas.width = width + padding * 2;
+  canvas.height = height + padding * 2;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const x = padding;
-      const y = padding;
+  const x = padding;
+  const y = padding;
 
-      // Draw shadow behind rounded rectangle
-      ctx.save();
-      ctx.fillStyle = 'rgba(0,0,0,0)'; // Transparent fill
-      ctx.shadowColor = shadowColor;
-      ctx.shadowBlur = blur;
-      ctx.shadowOffsetX = offsetX;
-      ctx.shadowOffsetY = offsetY;
+  // Shadow behind rounded rectangle
+  ctx.save();
+  ctx.fillStyle = 'black'; // << use a visible color to trigger shadow rendering
+  ctx.shadowColor = shadowColor;
+  ctx.shadowBlur = blur;
+  ctx.shadowOffsetX = offsetX;
+  ctx.shadowOffsetY = offsetY;
 
-      ctx.beginPath();
-      drawRoundedRect(ctx, x, y, width, height, radius);
-      ctx.fill();
-      ctx.restore();
+  ctx.beginPath();
+  drawRoundedRect(ctx, x, y, width, height, radius);
+  ctx.fill();
+  ctx.restore();
 
-      // Draw image clipped to rounded rect
-      ctx.save();
-      ctx.beginPath();
-      drawRoundedRect(ctx, x, y, width, height, radius);
-      ctx.clip();
-      ctx.drawImage(img, x, y);
-      ctx.restore();
-    }
+  // Draw image clipped to rounded rect
+  ctx.save();
+  ctx.beginPath();
+  drawRoundedRect(ctx, x, y, width, height, radius);
+  ctx.clip();
+  ctx.drawImage(img, x, y);
+  ctx.restore();
+}
+
 
     function drawRoundedRect(ctx, x, y, width, height, radius) {
       ctx.moveTo(x + radius, y);
